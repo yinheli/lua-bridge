@@ -1,0 +1,25 @@
+[package]
+name = "lua-bridge"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = { version = "1" }
+tracing = { version = "0" }
+tracing-subscriber = { version = "0", features = ["env-filter"] }
+clap = { version = "4", features = ["derive", "env"] }
+dotenv = { version = "0" }
+lazy_static = "1"
+tokio = { version = "1", features = ["full"] }
+mlua = { version = "0", features = ["lua54", "async"] }
+r2d2 = { version = "0" }
+redis = { version = "0.25", default-features = false, features = ["r2d2", "tokio-comp", "rustls"] }
+r2d2_mysql = { version = "25" }
+sqlx = { version = "0", features = ["runtime-tokio", "tls-rustls", "mysql" ] }
+
+[profile.release]
+opt-level = 3
+lto = true
+strip = true
+codegen-units = 1
+panic = 'abort'
