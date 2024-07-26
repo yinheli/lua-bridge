@@ -5,6 +5,7 @@ use r2d2_mysql::MySqlConnectionManager;
 use std::{
     fs,
     io::ErrorKind::{BrokenPipe, NotConnected},
+    ops::Deref,
     rc::Rc,
     sync::Arc,
 };
@@ -18,6 +19,8 @@ use crate::cli::ServeArgs;
 
 pub fn build_script(lua: Rc<Lua>, args: &ServeArgs) -> anyhow::Result<()> {
     let globals = lua.globals();
+    let id = format!("{:p}", lua.deref());
+    globals.set("_instance_id", id)?;
     globals.set("_version", env!("CARGO_PKG_VERSION"))?;
 
     register_log_function(lua.clone())?;
@@ -35,19 +38,19 @@ fn register_log_function(lua: Rc<Lua>) -> anyhow::Result<()> {
     let globals = lua.globals();
 
     let info = lua.create_function(|_, arg: String| {
-        info!("scripts: {}", arg.trim_end());
+        info!("[scripts] {}", arg.trim_end());
         Ok(())
     })?;
     globals.set("info", info)?;
 
     let error = lua.create_function(|_, arg: String| {
-        error!("scripts: {}", arg.trim_end());
+        error!("[scripts] {}", arg.trim_end());
         Ok(())
     })?;
     globals.set("error", error)?;
 
     let warn = lua.create_function(|_, arg: String| {
-        warn!("scripts: {}", arg.trim_end());
+        warn!("[scripts] {}", arg.trim_end());
         Ok(())
     })?;
     globals.set("warn", warn)?;

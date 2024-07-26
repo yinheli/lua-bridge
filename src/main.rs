@@ -24,7 +24,11 @@ async fn main() -> anyhow::Result<()> {
 
     let cli = cli::Cli::parse();
 
-    info!("{}, ver: v{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
+    info!(
+        "{}, ver: v{}",
+        env!("CARGO_PKG_NAME"),
+        env!("CARGO_PKG_VERSION")
+    );
 
     match cli.command {
         cli::Command::Serve(args) => server::serve(&args).await?,

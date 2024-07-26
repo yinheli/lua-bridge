@@ -4,6 +4,7 @@
 print("Hello, world!")
 
 print("ver:" .. _version)
+print("instance_id:" .. _instance_id)
 
 function handle(ctx)
   while true do
