@@ -35,9 +35,9 @@ jobs:
 
       - name: Post Build | Prepare artifacts [-nix]
         run: |
-          cp -r .env-example app.lua README.md target/release
+          cp -r .env-example app.lua lib.lua README.md README.md target/release
           cd target/release
-          tar czvf ../../lua-bridge-linux.tar.gz lua-bridge .env-example app.lua README.md
+          tar czvf ../../lua-bridge-linux.tar.gz lua-bridge .env-example app.lua lib.lua README.md
           pwd
           ls -lah
           cd -

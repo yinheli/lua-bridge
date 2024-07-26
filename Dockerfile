@@ -16,4 +16,6 @@ WORKDIR /app
 COPY --from=builder /app/target/release/lua-bridge .
 COPY --from=builder /app/README.md .
 COPY --from=builder /app/.env-example .
+COPY --from=builder /app/app.lua .
+COPY --from=builder /app/lib.lua .
 CMD ./lua-bridge serve
