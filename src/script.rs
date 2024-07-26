@@ -17,7 +17,7 @@ use tracing::{error, info, warn};
 
 use crate::cli::ServeArgs;
 
-pub fn build_script(lua: Rc<Lua>, args: &ServeArgs) -> anyhow::Result<()> {
+pub fn bind(lua: Rc<Lua>, args: &ServeArgs) -> anyhow::Result<()> {
     let globals = lua.globals();
     let id = format!("{:p}", lua.deref());
     globals.set("_instance_id", id)?;
@@ -28,9 +28,12 @@ pub fn build_script(lua: Rc<Lua>, args: &ServeArgs) -> anyhow::Result<()> {
     regisger_mysql_function(lua.clone(), &args.mysql_uri)?;
     regisger_redis_function(lua.clone(), &args.redis_uri)?;
 
-    let script = fs::read_to_string(&args.script)?;
-    lua.clone().load(script).exec()?;
+    Ok(())
+}
 
+pub fn load(lua: Rc<Lua>, path: &str) -> anyhow::Result<()> {
+    let script = fs::read_to_string(path)?;
+    lua.clone().load(script).exec()?;
     Ok(())
 }
 

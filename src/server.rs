@@ -1,10 +1,10 @@
 use mlua::{Function, Lua};
-use std::{rc::Rc, sync::Arc};
+use std::{fs, rc::Rc, sync::Arc, time::Duration};
 use tokio::{
     io::AsyncWriteExt,
     net::{TcpListener, TcpStream},
     runtime::Builder,
-    task,
+    task, time,
 };
 use tracing::{error, info};
 
@@ -51,16 +51,48 @@ pub async fn serve(args: &ServeArgs) -> anyhow::Result<()> {
 async fn handle(args: ServeArgs, ctx: Ctx) -> anyhow::Result<()> {
     let lua = Rc::new(Lua::new());
 
-    script::build_script(lua.clone(), &args)?;
+    script::bind(lua.clone(), &args)?;
+    script::load(lua.clone(), &args.script)?;
 
     let globals = lua.globals();
     let handle: Function = globals.get(args.script_entry.clone())?;
 
-    match handle.call_async::<_, ()>(ctx).await {
-        Ok(_) => {}
-        Err(e) => {
-            error!("handle error: {}", e);
+    let call = async {
+        info!("calling script entry: {}", args.script_entry);
+        match handle.call_async::<_, ()>(ctx).await {
+            Ok(_) => {}
+            Err(e) => {
+                error!("handle error: {}", e);
+            }
         }
+    };
+
+    let mut interval = time::interval(Duration::from_secs(10));
+    let mut last_time = None;
+
+    let lua = lua.clone();
+
+    let watch = async {
+        loop {
+            interval.tick().await;
+            if let Ok(meta) = fs::metadata(&args.script) {
+                let modified = Some(meta.modified().unwrap());
+                if last_time.is_none() {
+                    last_time = modified;
+                } else if modified > last_time {
+                    info!("script file changed, reload");
+                    last_time = modified;
+                    if let Err(e) = script::load(lua.clone(), &args.script) {
+                        error!("reload script error: {}", e);
+                    }
+                }
+            }
+        }
+    };
+
+    tokio::select! {
+        _ = call => {}
+        _ = watch => {}
     }
 
     Ok(())
