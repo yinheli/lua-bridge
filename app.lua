@@ -6,6 +6,10 @@ print("Hello, world!")
 print("ver:" .. _version)
 print("instance_id:" .. _instance_id)
 
+lib = require("lib")
+
+print(lib.hello("world, hello henry"))
+
 function handle(ctx)
   while true do
     -- use default buf size, or pass size as required
