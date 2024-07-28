@@ -43,7 +43,16 @@ pub async fn serve(args: &ServeArgs) -> anyhow::Result<()> {
         let rt = rt.clone();
 
         task::spawn(async move {
-            let _ = task::spawn_blocking(move || rt.block_on(handle(args, ctx))).await;
+            let task_result = task::spawn_blocking(move || rt.block_on(handle(args, ctx))).await;
+            match task_result {
+                Ok(Ok(_)) => {}
+                Ok(Err(e)) => {
+                    error!("handle error: {}", e);
+                }
+                Err(e) => {
+                    error!("task error: {}", e);
+                }
+            }
         });
     }
 }
