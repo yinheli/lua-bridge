@@ -1,7 +1,7 @@
 FROM --platform=$BUILDPLATFORM rust:1.75-bookworm as builder
 WORKDIR /app
 RUN apt-get update && \
-    apt-get install -y libssl-dev lua5.4 liblua5.4-dev && \
+    apt-get install -y libssl-dev lua5.1 liblua5.1-dev && \
     apt-get clean autoclean && apt-get autoremove --yes && rm -rf /var/lib/apt/lists/*
 COPY . .
 RUN cargo build --release
@@ -12,10 +12,6 @@ RUN apt-get update && \
     apt-get install -y build-essential git libssl-dev lua5.1 liblua5.1-dev && \
     apt-get install -y luarocks && \
     apt-get clean autoclean && apt-get autoremove --yes && rm -rf /var/lib/apt/lists/*
-RUN luarocks install lua-cjson && \
-    luarocks install http && \
-    luarocks lua-resty-http && \
-    luarocks serpent \
 RUN mkdir /app
 WORKDIR /app
 COPY --from=builder /app/target/release/lua-bridge .
