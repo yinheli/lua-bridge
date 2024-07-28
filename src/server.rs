@@ -58,7 +58,9 @@ pub async fn serve(args: &ServeArgs) -> anyhow::Result<()> {
 }
 
 async fn handle(args: ServeArgs, ctx: Ctx) -> anyhow::Result<()> {
-    let lua = Rc::new(Lua::new());
+    let lua = unsafe {
+        Rc::new(Lua::unsafe_new())
+    };
 
     script::bind(lua.clone(), &args)?;
     script::load(lua.clone(), &args.script)?;
