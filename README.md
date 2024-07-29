@@ -49,3 +49,19 @@ function handle(ctx)
 end
 ```
 
+## 依赖管理
+
+以 Debian 12 为为例
+
+```bash
+apt-get install -y build-essential git libssl-dev lua5.1 liblua5.1-dev
+
+apt-get install -y luarocks
+```
+
+```bash
+# 安装依赖，比如
+# 更多信息参考 https://luarocks.org/
+luarocks install cjson
+luarocks install serpent
+```
