@@ -127,7 +127,7 @@ tree $PWD/.rocks
 
 
 ```bash
-export LUA_PATH="$PWD/.rocks/share/lua/5.1/?.lua;$PWD/my_project_rocks/share/lua/5.1/?/init.lua;;"
+export LUA_PATH="$PWD/.rocks/share/lua/5.1/?.lua;$PWD/.rocks/share/lua/5.1/?/init.lua;;"
 export LUA_CPATH="$PWD/.rocks/lib/lua/5.1/?.so;;"
 ```
 
